@@ -21,13 +21,6 @@ import java.util.List;
 public class UserProfileController {
     UserProfileService userProfileService;
 
-    @PostMapping
-    ApiResponse<UserProfileResponse> createProfile(@RequestBody UserProfileCreationRequest request) {
-        return ApiResponse.<UserProfileResponse>builder()
-                .result(userProfileService.createProfile(request))
-                .build();
-    }
-
     @GetMapping
     ApiResponse<List<UserProfileResponse>> getAllProfile() {
         return ApiResponse.<List<UserProfileResponse>>builder()
