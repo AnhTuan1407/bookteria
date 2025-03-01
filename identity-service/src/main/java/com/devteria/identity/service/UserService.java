@@ -3,6 +3,9 @@ package com.devteria.identity.service;
 import java.util.HashSet;
 import java.util.List;
 
+import com.devteria.identity.dto.request.UserProfileCreationRequest;
+import com.devteria.identity.mapper.ProfileMapper;
+import com.devteria.identity.repository.httpClient.ProfileClient;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -34,6 +37,8 @@ public class UserService {
     RoleRepository roleRepository;
     UserMapper userMapper;
     PasswordEncoder passwordEncoder;
+    ProfileMapper profileMapper;
+    ProfileClient profileClient;
 
     public UserResponse createUser(UserCreationRequest request) {
         if (userRepository.existsByUsername(request.getUsername())) throw new AppException(ErrorCode.USER_EXISTED);
@@ -46,7 +51,14 @@ public class UserService {
 
         user.setRoles(roles);
 
-        return userMapper.toUserResponse(userRepository.save(user));
+        user = userRepository.save(user);
+
+        var profileCreationRequest = profileMapper.toUserProfileCreationRequest(request);
+        profileCreationRequest.setUserId(user.getId());
+
+        profileClient.createProfile(profileCreationRequest);
+
+        return userMapper.toUserResponse(user);
     }
 
     public UserResponse getMyInfo() {
