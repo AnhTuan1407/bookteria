@@ -55,7 +55,7 @@ public class AuthenticationService {
 
         try {
             verifyToken(token);
-        } catch (AppException e) {
+        } catch (AppException | JOSEException | ParseException e) {
             isValid = false;
         }
 
